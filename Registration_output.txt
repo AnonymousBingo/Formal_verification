@@ -1,0 +1,158 @@
+Process 0 (that is, the initial process):
+{1}new skAS_actual: skey;
+{2}let pkAS_actual: pkey = pkey_func(skAS_actual) in
+{3}new skE_actual: skey;
+{4}let pkE_actual: pkey = pkey_func(skE_actual) in
+(
+    {5}!
+    {6}let id_E: bitstring = Eid_const in
+    {7}let skE: skey = skE_actual in
+    {8}let pkE: pkey = pkey_func(skE) in
+    {9}new nonce1: bitstring;
+    {10}event E_initiates_registration(id_E,pkE);
+    {11}let M1: bitstring = H(append(id_E,nonce1)) in
+    {12}new timestamp1: bitstring;
+    {13}let Msg_Reg_E: bitstring = (id_E,pkE,nonce1,timestamp1) in
+    {14}let H_Msg_Reg_E: bitstring = H(Msg_Reg_E) in
+    {15}let Sign_Reg_E: bitstring = sign(H_Msg_Reg_E,skE) in
+    {16}out(E_AS, (Msg_Reg_E,Sign_Reg_E,M1));
+    {17}in(E_AS, (msg_ChalAS_E_rcvd: bitstring,sign_ChalAS_E_rcvd: bitstring));
+    {18}let H_Msg_ChalAS_E_rcvd_expected: bitstring = H(msg_ChalAS_E_rcvd) in
+    {19}let H_Msg_ChalAS_E_from_sig: bitstring = checksign(sign_ChalAS_E_rcvd,pkAS_actual) in
+    {20}if (H_Msg_ChalAS_E_from_sig = H_Msg_ChalAS_E_rcvd_expected) then
+    {21}let (Eid_rcvd_chal: bitstring,nonce1_rcvd_chal: bitstring,nonce2_rcvd_chal: bitstring,timestamp2_rcvd: bitstring) = msg_ChalAS_E_rcvd in
+    {22}if (nonce1_rcvd_chal = nonce1) then
+    {23}if (Eid_rcvd_chal = id_E) then
+    {24}new timestamp3: bitstring;
+    {25}let Msg_Resp_E: bitstring = (id_E,nonce2_rcvd_chal,timestamp3) in
+    {26}let H_Msg_Resp_E: bitstring = H(Msg_Resp_E) in
+    {27}let Sign_Resp_E: bitstring = sign(H_Msg_Resp_E,skE) in
+    {28}let H_M2: bitstring = H(append(M1,nonce2_rcvd_chal)) in
+    {29}out(E_AS, (Msg_Resp_E,Sign_Resp_E,H_M2))
+) | (
+    {30}!
+    {31}let id_AS: bitstring = ASid_const in
+    {32}let skAS: skey = skAS_actual in
+    {33}let pkAS: pkey = pkey_func(skAS) in
+    {34}in(E_AS, (msg_Reg_E_rcvd: bitstring,sign_Reg_E_rcvd: bitstring,M1_rcvd: bitstring));
+    {35}let (Eid_rcvd_req: bitstring,pkE_rcvd_req: pkey,nonce1_rcvd_req: bitstring,timestamp1_rcvd: bitstring) = msg_Reg_E_rcvd in
+    {36}let H_Msg_Reg_E_rcvd_expected: bitstring = H(msg_Reg_E_rcvd) in
+    {37}let H_Msg_Reg_E_from_sig: bitstring = checksign(sign_Reg_E_rcvd,pkE_rcvd_req) in
+    {38}if (H_Msg_Reg_E_from_sig = H_Msg_Reg_E_rcvd_expected) then
+    {39}new nonce2: bitstring;
+    {40}new timestamp2: bitstring;
+    {41}let Msg_ChalAS_E: bitstring = (Eid_rcvd_req,nonce1_rcvd_req,nonce2,timestamp2) in
+    {42}let H_Msg_ChalAS_E: bitstring = H(Msg_ChalAS_E) in
+    {43}let Sign_ChalAS_E: bitstring = sign(H_Msg_ChalAS_E,skAS) in
+    {44}out(E_AS, (Msg_ChalAS_E,Sign_ChalAS_E));
+    {45}in(E_AS, (msg_Resp_E_rcvd: bitstring,sign_Resp_E_rcvd: bitstring,hash_M2_rcvd: bitstring));
+    {46}let hash_M2_calc: bitstring = H(append(M1_rcvd,nonce2)) in
+    {47}let (Eid_rcvd_resp: bitstring,nonce2_rcvd_resp: bitstring,timestamp3_rcvd: bitstring) = msg_Resp_E_rcvd in
+    {48}let H_Msg_Resp_E_rcvd_expected: bitstring = H(msg_Resp_E_rcvd) in
+    {49}let H_Msg_Resp_E_from_sig: bitstring = checksign(sign_Resp_E_rcvd,pkE_rcvd_req) in
+    {50}if (H_Msg_Resp_E_from_sig = H_Msg_Resp_E_rcvd_expected) then
+    {51}if (hash_M2_calc = hash_M2_rcvd) then
+    {52}if (Eid_rcvd_resp = Eid_rcvd_req) then
+    {53}event Registration_complete(Eid_rcvd_req,pkE_rcvd_req)
+)
+
+--  Process 1 (that is, process 0, with let moved downwards):
+{1}new skAS_actual: skey;
+{3}new skE_actual: skey;
+(
+    {5}!
+    {9}new nonce1: bitstring;
+    {7}let skE: skey = skE_actual in
+    {8}let pkE: pkey = pkey_func(skE) in
+    {6}let id_E: bitstring = Eid_const in
+    {10}event E_initiates_registration(id_E,pkE);
+    {12}new timestamp1: bitstring;
+    {13}let Msg_Reg_E: bitstring = (id_E,pkE,nonce1,timestamp1) in
+    {14}let H_Msg_Reg_E: bitstring = H(Msg_Reg_E) in
+    {15}let Sign_Reg_E: bitstring = sign(H_Msg_Reg_E,skE) in
+    {11}let M1: bitstring = H(append(id_E,nonce1)) in
+    {16}out(E_AS, (Msg_Reg_E,Sign_Reg_E,M1));
+    {17}in(E_AS, (msg_ChalAS_E_rcvd: bitstring,sign_ChalAS_E_rcvd: bitstring));
+    {2}let pkAS_actual: pkey = pkey_func(skAS_actual) in
+    {19}let H_Msg_ChalAS_E_from_sig: bitstring = checksign(sign_ChalAS_E_rcvd,pkAS_actual) in
+    {18}let H_Msg_ChalAS_E_rcvd_expected: bitstring = H(msg_ChalAS_E_rcvd) in
+    {20}if (H_Msg_ChalAS_E_from_sig = H_Msg_ChalAS_E_rcvd_expected) then
+    {21}let (Eid_rcvd_chal: bitstring,nonce1_rcvd_chal: bitstring,nonce2_rcvd_chal: bitstring,timestamp2_rcvd: bitstring) = msg_ChalAS_E_rcvd in
+    {22}if (nonce1_rcvd_chal = nonce1) then
+    {23}if (Eid_rcvd_chal = id_E) then
+    {24}new timestamp3: bitstring;
+    {28}let H_M2: bitstring = H(append(M1,nonce2_rcvd_chal)) in
+    {25}let Msg_Resp_E: bitstring = (id_E,nonce2_rcvd_chal,timestamp3) in
+    {26}let H_Msg_Resp_E: bitstring = H(Msg_Resp_E) in
+    {27}let Sign_Resp_E: bitstring = sign(H_Msg_Resp_E,skE) in
+    {29}out(E_AS, (Msg_Resp_E,Sign_Resp_E,H_M2))
+) | (
+    {30}!
+    {34}in(E_AS, (msg_Reg_E_rcvd: bitstring,sign_Reg_E_rcvd: bitstring,M1_rcvd: bitstring));
+    {35}let (Eid_rcvd_req: bitstring,pkE_rcvd_req: pkey,nonce1_rcvd_req: bitstring,timestamp1_rcvd: bitstring) = msg_Reg_E_rcvd in
+    {37}let H_Msg_Reg_E_from_sig: bitstring = checksign(sign_Reg_E_rcvd,pkE_rcvd_req) in
+    {36}let H_Msg_Reg_E_rcvd_expected: bitstring = H(msg_Reg_E_rcvd) in
+    {38}if (H_Msg_Reg_E_from_sig = H_Msg_Reg_E_rcvd_expected) then
+    {39}new nonce2: bitstring;
+    {40}new timestamp2: bitstring;
+    {41}let Msg_ChalAS_E: bitstring = (Eid_rcvd_req,nonce1_rcvd_req,nonce2,timestamp2) in
+    {42}let H_Msg_ChalAS_E: bitstring = H(Msg_ChalAS_E) in
+    {32}let skAS: skey = skAS_actual in
+    {43}let Sign_ChalAS_E: bitstring = sign(H_Msg_ChalAS_E,skAS) in
+    {44}out(E_AS, (Msg_ChalAS_E,Sign_ChalAS_E));
+    {45}in(E_AS, (msg_Resp_E_rcvd: bitstring,sign_Resp_E_rcvd: bitstring,hash_M2_rcvd: bitstring));
+    {47}let (Eid_rcvd_resp: bitstring,nonce2_rcvd_resp: bitstring,timestamp3_rcvd: bitstring) = msg_Resp_E_rcvd in
+    {49}let H_Msg_Resp_E_from_sig: bitstring = checksign(sign_Resp_E_rcvd,pkE_rcvd_req) in
+    {48}let H_Msg_Resp_E_rcvd_expected: bitstring = H(msg_Resp_E_rcvd) in
+    {50}if (H_Msg_Resp_E_from_sig = H_Msg_Resp_E_rcvd_expected) then
+    {46}let hash_M2_calc: bitstring = H(append(M1_rcvd,nonce2)) in
+    {51}if (hash_M2_calc = hash_M2_rcvd) then
+    {52}if (Eid_rcvd_resp = Eid_rcvd_req) then
+    {53}event Registration_complete(Eid_rcvd_req,pkE_rcvd_req)
+)
+
+-- Query not attacker(skE_actual[]) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query not attacker(skE_actual[])
+RESULT not attacker(skE_actual[]) is true.
+-- Query not attacker(skAS_actual[]) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query not attacker(skAS_actual[])
+RESULT not attacker(skAS_actual[]) is true.
+-- Query event(Registration_complete(eid,pke)) ==> event(E_initiates_registration(eid,pke)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query event(Registration_complete(eid,pke)) ==> event(E_initiates_registration(eid,pke))
+goal reachable: b-event(E_initiates_registration(Eid_const,pkey_func(skE_actual[]))) -> event(Registration_complete(Eid_const,pkey_func(skE_actual[])))
+RESULT event(Registration_complete(eid,pke)) ==> event(E_initiates_registration(eid,pke)) is true.
+-- Query inj-event(Registration_complete(eid,pke)) ==> inj-event(E_initiates_registration(eid,pke)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query inj-event(Registration_complete(eid,pke)) ==> inj-event(E_initiates_registration(eid,pke))
+goal reachable: b-event(@p_act(@occ17_1,((Eid_const,nonce1_1,nonce2_1,timestamp2_1),sign(H((Eid_const,nonce1_1,nonce2_1,timestamp2_1)),skAS_actual[])))) && b-inj-event(E_initiates_registration(Eid_const,pkey_func(skE_actual[])),@occ10_1) -> inj-event(Registration_complete(Eid_const,pkey_func(skE_actual[])),@occ53_1)
+The 1st, 2nd hypotheses occur strictly before the conclusion.
+Abbreviations:
+nonce1_1 = nonce1[!1 = @sid]
+timestamp1_1 = timestamp1[!1 = @sid]
+nonce2_1 = nonce2[M1_rcvd = H(append(Eid_const,nonce1_1)),sign_Reg_E_rcvd = sign(H((Eid_const,pkey_func(skE_actual[]),nonce1_1,timestamp1_1)),skE_actual[]),msg_Reg_E_rcvd = (Eid_const,pkey_func(skE_actual[]),nonce1_1,timestamp1_1),!1 = @sid_1]
+timestamp2_1 = timestamp2[M1_rcvd = H(append(Eid_const,nonce1_1)),sign_Reg_E_rcvd = sign(H((Eid_const,pkey_func(skE_actual[]),nonce1_1,timestamp1_1)),skE_actual[]),msg_Reg_E_rcvd = (Eid_const,pkey_func(skE_actual[]),nonce1_1,timestamp1_1),!1 = @sid_1]
+timestamp3_1 = timestamp3[sign_ChalAS_E_rcvd = sign(H((Eid_const,nonce1_1,nonce2_1,timestamp2_1)),skAS_actual[]),msg_ChalAS_E_rcvd = (Eid_const,nonce1_1,nonce2_1,timestamp2_1),!1 = @sid]
+@occ53_1 = @occ53[hash_M2_rcvd = H(append(H(append(Eid_const,nonce1_1)),nonce2_1)),sign_Resp_E_rcvd = sign(H((Eid_const,nonce2_1,timestamp3_1)),skE_actual[]),msg_Resp_E_rcvd = (Eid_const,nonce2_1,timestamp3_1),M1_rcvd = H(append(Eid_const,nonce1_1)),sign_Reg_E_rcvd = sign(H((Eid_const,pkey_func(skE_actual[]),nonce1_1,timestamp1_1)),skE_actual[]),msg_Reg_E_rcvd = (Eid_const,pkey_func(skE_actual[]),nonce1_1,timestamp1_1),!1 = @sid_1]
+@occ17_1 = @occ17[!1 = @sid]
+@occ10_1 = @occ10[!1 = @sid]
+RESULT inj-event(Registration_complete(eid,pke)) ==> inj-event(E_initiates_registration(eid,pke)) is true.
+
+--------------------------------------------------------------
+Verification summary:
+
+Query not attacker(skE_actual[]) is true.
+
+Query not attacker(skAS_actual[]) is true.
+
+Query event(Registration_complete(eid,pke)) ==> event(E_initiates_registration(eid,pke)) is true.
+
+Query inj-event(Registration_complete(eid,pke)) ==> inj-event(E_initiates_registration(eid,pke)) is true.
+
+--------------------------------------------------------------
