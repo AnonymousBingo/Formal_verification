@@ -1,6 +1,6 @@
 # Formal Analysis of STRP Protocol using ProVerif
 
-This repository contains the ProVerif scripts for the formal security analysis of the [Your Protocol Name] protocol. The analysis covers two main phases of the protocol: Registration and Authentication.
+This repository contains the ProVerif scripts for the formal security analysis of the STRP protocol. The analysis covers two main phases of the protocol: Registration and Authentication.
 
 ## Overview
 
