@@ -1,0 +1,127 @@
+(* Registration Protocol Verification Script *)
+
+(* --- Channels --- *)
+(* Secure channel between Entity E and Admin Server AS, established via TLS *)
+free E_AS: channel [private].
+
+(* --- Types --- *)
+type skey.
+type pkey.
+
+(* --- Constants and Identifiers --- *)
+const Eid_const: bitstring.
+const ASid_const: bitstring.
+
+(* --- Cryptographic Primitives --- *)
+fun H(bitstring): bitstring.
+fun pkey_func(skey): pkey.
+fun sign(bitstring, skey): bitstring.
+fun append(bitstring, bitstring): bitstring.
+reduc forall mh: bitstring, sk: skey; checksign(sign(mh, sk), pkey_func(sk)) = mh.
+
+(* --- Events for Registration Protocol --- *)
+(* Simplified events as requested *)
+event E_initiates_registration(bitstring, pkey). (* Eid, pkE, nonce1 *)
+event Registration_complete(bitstring, pkey). (* Eid, pkE, stateTokenE *)
+
+(* Secrecy Queries *)
+
+query attacker(new skE_actual).
+query attacker(new skAS_actual).
+
+(* --- Process for Entity E (User or Service Provider) --- *)
+let processEntity(id_E: bitstring, skE: skey, pkAS: pkey) =
+    
+    let pkE = pkey_func(skE) in
+    new nonce1: bitstring;
+    event E_initiates_registration(id_E, pkE);
+
+    let M1 = H(append(id_E, nonce1)) in
+    (* RReq E AS: E constructs and sends the registration request *)
+    new timestamp1: bitstring;
+    let Msg_Reg_E = (id_E, pkE, nonce1, timestamp1) in
+    let H_Msg_Reg_E = H(Msg_Reg_E) in
+    let Sign_Reg_E = sign(H_Msg_Reg_E, skE) in
+    out(E_AS, (Msg_Reg_E, Sign_Reg_E, M1));
+
+    (* E waits for AS's challenge *)
+    in(E_AS, (msg_ChalAS_E_rcvd: bitstring, sign_ChalAS_E_rcvd: bitstring));
+    let H_Msg_ChalAS_E_rcvd_expected = H(msg_ChalAS_E_rcvd) in
+    let H_Msg_ChalAS_E_from_sig = checksign(sign_ChalAS_E_rcvd, pkAS) in
+
+    if H_Msg_ChalAS_E_from_sig = H_Msg_ChalAS_E_rcvd_expected then
+        let (Eid_rcvd_chal: bitstring, nonce1_rcvd_chal: bitstring, nonce2_rcvd_chal: bitstring, timestamp2_rcvd: bitstring) = msg_ChalAS_E_rcvd in
+        if nonce1_rcvd_chal = nonce1 then
+            if Eid_rcvd_chal = id_E then
+                (* RResp E to AS: E constructs and sends its response *)
+                new timestamp3: bitstring;
+                let Msg_Resp_E = (id_E, nonce2_rcvd_chal, timestamp3) in
+                let H_Msg_Resp_E = H(Msg_Resp_E) in
+                let Sign_Resp_E = sign(H_Msg_Resp_E, skE) in
+                let H_M2 = H(append(M1, nonce2_rcvd_chal)) in
+                out(E_AS, (Msg_Resp_E, Sign_Resp_E, H_M2)).
+
+(* --- Process for Admin Server AS --- *)
+let processAdminServer(id_AS: bitstring, skAS: skey) =
+    let pkAS = pkey_func(skAS) in
+
+    (* RVerify AS from E: AS waits for E's registration request *)
+    in(E_AS, (msg_Reg_E_rcvd: bitstring, sign_Reg_E_rcvd: bitstring, M1_rcvd: bitstring));
+    let (Eid_rcvd_req: bitstring, pkE_rcvd_req: pkey, nonce1_rcvd_req: bitstring, timestamp1_rcvd: bitstring) = msg_Reg_E_rcvd in
+    let H_Msg_Reg_E_rcvd_expected = H(msg_Reg_E_rcvd) in
+    let H_Msg_Reg_E_from_sig = checksign(sign_Reg_E_rcvd, pkE_rcvd_req) in
+
+    if H_Msg_Reg_E_from_sig = H_Msg_Reg_E_rcvd_expected then
+        (* AS verifies freshness of timestamp (not explicitly modeled) *)
+        (* AS performs out-of-band checks (not modeled) *)
+        (* AS stores (Eid, PUBE, status="pending activation") and generates reg_nonceAS *)
+        new nonce2: bitstring;
+        
+        (* RChallenge AS to E: AS generates its nonce and sends the challenge *)
+        new timestamp2: bitstring;
+        let Msg_ChalAS_E = (Eid_rcvd_req, nonce1_rcvd_req, nonce2, timestamp2) in
+        let H_Msg_ChalAS_E = H(Msg_ChalAS_E) in
+        let Sign_ChalAS_E = sign(H_Msg_ChalAS_E, skAS) in
+        out(E_AS, (Msg_ChalAS_E, Sign_ChalAS_E));
+
+        (* RFinalize AS for E: AS waits for E's response to the challenge *)
+        in(E_AS, (msg_Resp_E_rcvd: bitstring, sign_Resp_E_rcvd: bitstring, hash_M2_rcvd: bitstring));
+        
+        let hash_M2_calc = H(append(M1_rcvd, nonce2)) in
+        let (Eid_rcvd_resp: bitstring, nonce2_rcvd_resp: bitstring, timestamp3_rcvd: bitstring) = msg_Resp_E_rcvd in
+        let H_Msg_Resp_E_rcvd_expected = H(msg_Resp_E_rcvd) in
+        let H_Msg_Resp_E_from_sig = checksign(sign_Resp_E_rcvd, pkE_rcvd_req) in
+
+        if H_Msg_Resp_E_from_sig = H_Msg_Resp_E_rcvd_expected then
+            if hash_M2_calc = hash_M2_rcvd then
+                if Eid_rcvd_resp = Eid_rcvd_req then
+                
+                    (* AS stores (Eid, PUBE, status="active", stateTokenE) *)
+                    event Registration_complete(Eid_rcvd_req, pkE_rcvd_req).
+
+
+
+
+(* Correspondence Properties *)
+query eid:bitstring, pke:pkey; 
+  event(Registration_complete(eid, pke)) ==> event(E_initiates_registration(eid, pke)).
+
+(* Injectivity Properties *)
+query eid:bitstring, pke:pkey; 
+  inj-event(Registration_complete(eid, pke)) ==> inj-event(E_initiates_registration(eid, pke)).
+
+(* --- Main Process --- *)
+process
+    (* Setup Admin Server's long-term keys *)
+    new skAS_actual: skey;
+    let pkAS_actual = pkey_func(skAS_actual) in
+    new skE_actual: skey;
+    let pkE_actual = pkey_func(skE_actual) in
+
+    (
+        (* Run one instance of an Entity E trying to register *)
+        (!processEntity(Eid_const, skE_actual, pkAS_actual))
+        |
+        (* Run one instance of the Admin Server AS with skAS_actual passed as a parameter *)
+        (!processAdminServer(ASid_const, skAS_actual))
+    )
