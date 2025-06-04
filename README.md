@@ -16,6 +16,8 @@ The repository includes the following ProVerif (`.pv`) files:
 
 - `Registration.pv`: Models the registration phase where entities (Users/Servers) establish their identities and credentials with an Admin Server. This phase is assumed to occur over a secure (private) channel.
 - `Authentication.pv`: Models the authentication phase where a User authenticates to one or more Servers (Si, Sj) potentially involving interaction with an Admin Server. This phase largely occurs over public channels.
+- `Authentication_output.txt`: This file contains the actual output that the Proverif script Authentication.pv generates.
+- `Registration_output.txt`: This file contains the actual output that the Proverif script Registration.pv generates. 
 
 ## Security Properties Verified
 
