@@ -63,3 +63,54 @@ To verify the protocols using ProVerif:
 ## Disclaimer
 
 This formal analysis provides a level of assurance regarding the specified security properties within the defined model. It does not cover all possible security aspects, such as side-channel attacks, denial-of-service vulnerabilities not related to logical flaws, or implementation errors.
+
+# STRP - Comparative Performance Analysis
+
+## Overview
+
+This document presents a comparative performance analysis of STRP (Secure Token-based Registration Protocol) against several recent and relevant authentication protocols in multi-server environments.
+
+## Comparative Performance Analysis
+
+To evaluate the practicality and efficiency of STRP, we conducted a comparative analysis of its cryptographic operational costs against several recent and relevant protocols.
+
+The results in the table below highlight the different design trade-offs made by each protocol:
+
+- **Xiong et al.**: Achieves strong anonymity through proxy resignature but incurs a very high cost in asymmetric operations
+- **Conners et al.**: Certificate-based approach relies heavily on a public key infrastructure, leading to a high number of signature and verification operations
+- **Yeoh et al. (FIDO-AC)**: Represents the state-of-the-art but its core security relies on Zero-Knowledge Proofs (ZKPs), which are computationally intensive for the client device
+
+In contrast, **STRP demonstrates a balanced and efficient design**. It avoids the most expensive cryptographic primitives like bilinear pairings and ZKPs, positioning it as a practical and scalable solution for real-world multi-server environments.
+
+
+
+## Performance Comparison Table
+
+| Operation | STRP (Ours) | Xiong et al. | Conners et al. | Yeoh et al. |
+|-----------|-------------|--------------|----------------|-------------|
+| Hashing (H) | 7 | 5 | ~9* | ~4* |
+| Signatures (Sig) | 2 | - | 4 | 2 |
+| Verifications (Ver) | 2 | - | 5 | 2 |
+| Modular Exp (Exp) | 4 | 12 | - | - |
+| Bilinear Pairings (Pair) | - | 2 | - | - |
+| Symmetric Enc/Dec | 2 pairs | 1 pair | - | - |
+| ZKP Generation | - | - | - | 1 |
+| ZKP Verification | - | - | - | 1 |
+
+*\*Hashing is an implicit part of each signature/verification, estimated as 1 hash per operation.*
+
+## Key Advantages of STRP
+
+1. **Balanced Performance**: Optimized trade-off between security and computational efficiency
+2. **Practical Design**: Avoids computationally expensive primitives like bilinear pairings and ZKPs
+3. **Scalability**: Suitable for real-world multi-server environments
+4. **Efficiency**: Lower overall cryptographic operational costs compared to competing protocols
+
+## Protocol Analysis Summary
+
+- **STRP**: Focuses on practical efficiency with moderate use of standard cryptographic operations
+- **Xiong et al.**: High security through proxy resignature but computationally expensive
+- **Conners et al.**: PKI-dependent with high signature/verification overhead
+- **Yeoh et al.**: Advanced security features but resource-intensive ZKP operations
+
+This analysis demonstrates STRP's effectiveness as a practical solution for secure multi-server authentication scenarios.
