@@ -1,3 +1,15 @@
+# State Token Relay Protocol (STRP) - Analysis Repository
+
+This repository contains comprehensive analysis for the **State Token Relay Protocol (STRP)**, a secure authentication mechanism for multi-server environments, supporting the paper submitted to PKIA 2025 (Paper ID: 58).
+
+## Navigation
+
+- 🔄 **[Protocol Flow Diagrams](#protocol-phases)** - Visual sequence diagrams for all five protocol phases
+- 🔒 **[Formal Security Analysis](#formal-analysis-of-strp-protocol-using-proverif)** - ProVerif verification scripts and security proofs  
+- ⚡ **[Performance Analysis](#strp---comparative-performance-analysis)** - Computational cost comparison with existing protocols
+
+---
+
 # State Token Relay Protocol (STRP) - Visual Flow Diagrams
 
 This repository contains supplementary visual artifacts for the paper titled **"A Usable And Secure Authentication for Multi-server Environments to Enhance Digital Trust"** (Paper ID: 58), submitted to PKIA 2025.
