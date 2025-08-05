@@ -1,3 +1,71 @@
+# State Token Relay Protocol (STRP) - Visual Flow Diagrams
+
+This repository contains supplementary visual artifacts for the paper titled **"A Usable And Secure Authentication for Multi-server Environments to Enhance Digital Trust"** (Paper ID: 58), submitted to PKIA 2025.
+
+The following sequence diagrams illustrate the communication flow for each of the five core phases of the STRP.
+
+## Overview
+
+The State Token Relay Protocol (STRP) provides a secure authentication mechanism for multi-server environments. This repository contains visual representations of the protocol's five core phases, each demonstrating different aspects of the authentication and security flow.
+
+## Protocol Phases
+
+### 1. Registration Phase
+
+This diagram illustrates the initial process where an entity (User or Service Provider) establishes a secure cryptographic identity with the Admin Server.
+
+![Registration Phase](Registration.png)
+
+### 2. StateTokenGen Phase
+
+This diagram shows the collaborative commit-reveal scheme between an entity and the Admin Server. This process is used to securely generate the shared secret entropy that forms the basis of the stateToken.
+
+![State Token Generation Phase](StateTokenGen.png)
+
+### 3. Authentication Phase
+
+This diagram details the primary authentication flow where a User proves their identity to a Service Provider (SPi). The process involves a challenge-response mechanism mediated by the Admin Server, which provides the necessary encrypted state information.
+
+![Authentication Phase](Authentication.png)
+
+### 4. Validation Phase
+
+This diagram outlines the chained authentication process. It shows how a new Service Provider (SPj) can validate a User by leveraging a prior, trusted authentication session the User had with another provider (SPi), ensuring seamless and secure access across the multi-server environment.
+
+![Validation Phase](Validation.png)
+
+### 5. Recovery Phase
+
+This diagram shows the secure process for a User to recover their account after a potential credential compromise. The flow allows the User to establish a new key pair and generate a fresh stateToken with the Admin Server.
+
+![Recovery Phase](Recovery.png)
+
+## Image Files
+
+The following diagram files are included in this repository:
+
+- Registration.png
+- StateTokenGen.png
+- Authentication.png
+- Validation.png
+- Recovery.png
+
+## Protocol Security Features
+
+- **Multi-server Authentication**: Seamless authentication across multiple service providers
+- **State Token Management**: Secure generation and management of authentication tokens
+- **Recovery Mechanisms**: Built-in account recovery procedures
+- **Cryptographic Security**: Strong cryptographic foundations for all operations
+- **Chained Validation**: Efficient validation leveraging prior authentication sessions
+
+## Usage
+
+To view the complete protocol flow:
+
+1. Clone this repository
+2. Ensure all image files are present in the root directory
+3. View the README.md file in any Markdown viewer or GitHub
+
 # Formal Analysis of STRP Protocol using ProVerif
 
 This repository contains the ProVerif scripts for the formal security analysis of the STRP protocol. The analysis covers two main phases of the protocol: Registration and Authentication.
@@ -81,74 +149,6 @@ The results in the table below highlight the different design trade-offs made by
 - **Yeoh et al. (FIDO-AC)**: Represents the state-of-the-art but its core security relies on Zero-Knowledge Proofs (ZKPs), which are computationally intensive for the client device
 
 In contrast, **STRP demonstrates a balanced and efficient design**. It avoids the most expensive cryptographic primitives like bilinear pairings and ZKPs, positioning it as a practical and scalable solution for real-world multi-server environments.
-
-# State Token Relay Protocol (STRP) - Visual Flow Diagrams
-
-This repository contains supplementary visual artifacts for the paper titled **"A Usable And Secure Authentication for Multi-server Environments to Enhance Digital Trust"** (Paper ID: 58), submitted to PKIA 2025.
-
-The following sequence diagrams illustrate the communication flow for each of the five core phases of the STRP.
-
-## Overview
-
-The State Token Relay Protocol (STRP) provides a secure authentication mechanism for multi-server environments. This repository contains visual representations of the protocol's five core phases, each demonstrating different aspects of the authentication and security flow.
-
-## Protocol Phases
-
-### 1. Registration Phase
-
-This diagram illustrates the initial process where an entity (User or Service Provider) establishes a secure cryptographic identity with the Admin Server.
-
-![Registration Phase](Registration.png)
-
-### 2. StateTokenGen Phase
-
-This diagram shows the collaborative commit-reveal scheme between an entity and the Admin Server. This process is used to securely generate the shared secret entropy that forms the basis of the stateToken.
-
-![State Token Generation Phase](StateTokenGen.png)
-
-### 3. Authentication Phase
-
-This diagram details the primary authentication flow where a User proves their identity to a Service Provider (SPi). The process involves a challenge-response mechanism mediated by the Admin Server, which provides the necessary encrypted state information.
-
-![Authentication Phase](Authentication.png)
-
-### 4. Validation Phase
-
-This diagram outlines the chained authentication process. It shows how a new Service Provider (SPj) can validate a User by leveraging a prior, trusted authentication session the User had with another provider (SPi), ensuring seamless and secure access across the multi-server environment.
-
-![Validation Phase](Validation.png)
-
-### 5. Recovery Phase
-
-This diagram shows the secure process for a User to recover their account after a potential credential compromise. The flow allows the User to establish a new key pair and generate a fresh stateToken with the Admin Server.
-
-![Recovery Phase](Recovery.png)
-
-## Image Files
-
-The following diagram files are included in this repository:
-
-- Registration.png
-- StateTokenGen.png
-- Authentication.png
-- Validation.png
-- Recovery.png
-
-## Protocol Security Features
-
-- **Multi-server Authentication**: Seamless authentication across multiple service providers
-- **State Token Management**: Secure generation and management of authentication tokens
-- **Recovery Mechanisms**: Built-in account recovery procedures
-- **Cryptographic Security**: Strong cryptographic foundations for all operations
-- **Chained Validation**: Efficient validation leveraging prior authentication sessions
-
-## Usage
-
-To view the complete protocol flow:
-
-1. Clone this repository
-2. Ensure all image files are present in the root directory
-3. View the README.md file in any Markdown viewer or GitHub
 
 ## Performance Comparison Table
 
