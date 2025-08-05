@@ -78,6 +78,8 @@ To view the complete protocol flow:
 2. Ensure all image files are present in the root directory
 3. View the README.md file in any Markdown viewer or GitHub
 
+---
+
 # Formal Analysis of STRP Protocol using ProVerif
 
 This repository contains the ProVerif scripts for the formal security analysis of the STRP protocol. The analysis covers two main phases of the protocol: Registration and Authentication.
@@ -149,6 +151,8 @@ This formal analysis provides a level of assurance regarding the specified secur
 ## Overview
 
 This document presents a comparative performance analysis of STRP (Secure Token-based Registration Protocol) against several recent and relevant authentication protocols in multi-server environments.
+
+---
 
 ## Comparative Performance Analysis
 
