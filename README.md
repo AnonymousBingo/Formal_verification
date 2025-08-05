@@ -146,13 +146,13 @@ To verify the protocols using ProVerif:
 
 This formal analysis provides a level of assurance regarding the specified security properties within the defined model. It does not cover all possible security aspects, such as side-channel attacks, denial-of-service vulnerabilities not related to logical flaws, or implementation errors.
 
+---
+
 # STRP - Comparative Performance Analysis
 
 ## Overview
 
 This document presents a comparative performance analysis of STRP (Secure Token-based Registration Protocol) against several recent and relevant authentication protocols in multi-server environments.
-
----
 
 ## Comparative Performance Analysis
 
